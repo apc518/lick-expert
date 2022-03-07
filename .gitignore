@@ -3,6 +3,8 @@ env
 test
 solo
 
+test.py
+
 *.mid
 *.midi
 *.wav
