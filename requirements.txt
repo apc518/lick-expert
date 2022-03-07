@@ -24,6 +24,7 @@ pandas==1.4.1
 Pillow==9.0.1
 pooch==1.6.0
 pycparser==2.21
+pydub==0.25.1
 pyparsing==3.0.7
 pyrsistent==0.18.1
 python-dateutil==2.8.2
