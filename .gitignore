@@ -4,6 +4,7 @@ test
 solo
 
 test.py
+scratch.txt
 
 *.mid
 *.midi

@@ -12,6 +12,7 @@ Justin Salamon implemented all the logic.
 # MODIFIED: 2022-03-02 by Andy Chamberlain <andychamberlainmusic@gmail.com>
 
 import warnings
+import matplotlib.pyplot as plt
 import librosa
 import vamp
 import argparse
@@ -40,6 +41,9 @@ python audio_to_midi_melodia.py --smooth 0.25 --minduration 0.1 --jams
 
 INF = 2**32
 
+def graph_array(arr):
+    plt.plot(np.linspace(0, len(arr), len(arr)), arr)
+    plt.show()
 
 def midi_to_notes(midi, fs, hop, smooth, minduration):
 
@@ -87,6 +91,7 @@ def midi_to_notes(midi, fs, hop, smooth, minduration):
 
 
 def hz2midi(hz):
+    # graph_array(hz)
 
     # convert from Hz to midi note
     hz_nonneg = hz.copy()

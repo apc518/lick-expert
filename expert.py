@@ -9,6 +9,7 @@ from pydub import AudioSegment
 import matplotlib.pyplot as plt
 
 from audio_to_midi_melodia import audio_to_midi_melodia as atmm
+from pyin import pyin_getnotes as pyin
 
 PROTO_PATTERN = [2, 4, 5, 7, 4, 0, 2] # the prototypical pattern of the pitches of The Lick
 
@@ -125,6 +126,7 @@ def is_lick(notes):
     print("\twe didn't find anything wow")
     return False
 
+
 def classify(audio_file, show_graphic=False):
     # notes is a list of tuples that have the form (note_start_time, note_length, note_pitch)
     a_s = AudioSegment.from_file(audio_file)
@@ -133,10 +135,17 @@ def classify(audio_file, show_graphic=False):
 
     # print(f"minduration: ", length/30)
 
-    notes = atmm(audio_file, minduration=length/50)
+    melodia_notes = atmm(audio_file, minduration=length/50)
+    pyin_notes = pyin(audio_file)
     # print(notes)
 
-    ans = YES_MSG if is_lick(notes) else NO_MSG
+    is_lick_melodia = is_lick(melodia_notes)
+    is_lick_pyin = is_lick(pyin_notes)
+ 
+    ans = YES_MSG if is_lick_melodia or is_lick_pyin else NO_MSG
+
+    notes = pyin_notes if is_lick_pyin else melodia_notes
+    # notes = melodia_notes if is_lick_melodia else pyin_notes
 
     # start times and note values
     xs = [x for x, _, _ in notes]
@@ -147,7 +156,7 @@ def classify(audio_file, show_graphic=False):
     xs.append(xs[-1] + notes[-1][1])
 
     if show_graphic:
-        plt.step(xs, ys, where='post') # kind of close to looking like midi lol
+        plt.hlines(ys[:-1], xs[:-1], xs[1:], linewidth=15) # kind of close to looking like midi lol
         plt.title(ans)
         plt.show()
     else:
@@ -162,7 +171,9 @@ def main():
     if os.path.isdir(sys.argv[1]):
         directory = sys.argv[1]
 
-        for item in os.listdir(directory):
+        alphabetical_items = sorted(os.listdir(directory))
+
+        for item in alphabetical_items:
             classify(f"{directory}/{item}", show_graphic=False)
     else:
         classify(sys.argv[1], show_graphic=True)
