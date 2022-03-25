@@ -25,13 +25,25 @@ def graph_notes(notes):
     plt.step(xs, ys, where='post') # kind of close to looking like midi lol
     plt.show()
 
-def smooth_array(arr):
+def smooth_array(arr, threshold=5):
     """
     remove anomalies
     not implemented yet
     """
 
-    return arr
+    slopes = [abs(arr[i] - arr[i-1]) for i in range(1, len(arr))]
+
+    avg_slope = sum(slopes) / len(slopes)
+
+    for i, v in enumerate(arr):
+        try:
+            slope_from_last = slopes[i-1]
+            slope_to_next = slopes[i]
+            if slope_from_last > avg_slope * threshold and slope_to_next > avg_slope * threshold:
+                arr[i] = (arr[i-10] + arr[i+10]) / 2
+        except:
+            pass            
+
 
 def pyin_getnotes(infile):
     fs = 44100
@@ -59,7 +71,9 @@ def pyin_getnotes(infile):
         if 'values' in p:
             hz[i] = p['values'][0]
 
-    # graph_array(hz)
+    smooth_array(hz, threshold=10)
+
+    graph_array(hz)
 
 
     midi_pitch = hz2midi(hz)
